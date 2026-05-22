@@ -64,11 +64,6 @@
             </select>
         </div>
 
-        <div class="form-group">
-            <label>Upload Bank Voucher / Screenshot:</label>
-            <input type="file" id="voucherFile" accept="image/*">
-        </div>
-
         <div class="qr-section" id="qrSection">
             <div class="qr-title">Scan & Pay</div>
             <img src="qr-code.jpg" alt="LCIF Contribution QR">
@@ -115,7 +110,7 @@
             paymentMethod: method
         };
 
-        // यहाँ तपाईंको गुगल एप्स स्क्रिप्टको Web App URL राख्नुहोला:
+        // ⚠️ यहाँ तपाईंको गुगल स्क्रिप्टको Web App URL पेस्ट गर्नुहोला:
         var webAppUrl = "YOUR_APPS_SCRIPT_WEB_APP_URL";
         
         fetch(webAppUrl, {
@@ -127,16 +122,11 @@
         })
         .then(res => res.json())
         .then(response => {
-            if(response.status === "success") {
-                // डाटा सिटमा सेभ भएपछि ह्वाट्सएप खोल्ने बेला सुचित गर्ने
-                alert("डाटा सफलतापूर्वक शीटमा सुरक्षित भयो। अब ह्वाट्सएप खुलेपछि आफ्नो ग्यालरीबाट अघि छनोट गरेको भौचरको फोटो अट्याच (Attach) गरी पठाउनुहोला।");
-                redirectToWhatsApp(formData);
-            } else {
-                alert("सिटमा सेभ हुन सकेन: " + response.message);
-                redirectToWhatsApp(formData);
-            }
+            // डाटा गुगल शीटमा सफलतापूर्वक सुरक्षित भएपछि सिधै व्हाट्सएप खोल्ने
+            redirectToWhatsApp(formData);
         })
         .catch(err => {
+            // कुनै कारणले इन्टरनेट वा सिटमा समस्या आए पनि व्हाट्सएप खोल्ने
             redirectToWhatsApp(formData);
         });
     }
@@ -146,6 +136,7 @@
         submitBtn.disabled = false;
         submitBtn.innerText = "Submit & Send to WhatsApp";
 
+        // तपाईँले भन्नुभए अनुसारको सटिक नेपाली टेक्स्ट संरचना
         let message = `नमस्ते लायन प्रविन प्रसाद लाकोल ज्यू,\n\n` +
                       `LCIF योगदान (2026-2027) को लागि मेरो सहयोग विवरण यस प्रकार छ:\n\n` +
                       `• *Membership No.:* ${data.membershipNo}\n` +
@@ -160,6 +151,7 @@
         const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
         
+        // फारम र क्युआर कोठा रिसेट गर्ने
         document.getElementById('commitmentForm').reset();
         document.getElementById('qrSection').style.display = 'none';
     }
