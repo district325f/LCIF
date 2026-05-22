@@ -70,11 +70,6 @@
             <img src="https://i.ibb.co/3mN9fNz/1000148581.jpg" alt="Siddhartha Bank QR">
         </div>
 
-        <div class="form-group">
-            <label>Upload Voucher / Receipt:</label>
-            <input type="file" id="voucherFile" accept="image/*" required>
-        </div>
-
         <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit & Send to WhatsApp</button>
     </form>
 
@@ -91,7 +86,6 @@
 
     function submitData() {
         const submitBtn = document.getElementById('submitBtn');
-        const fileInput = document.getElementById('voucherFile');
         
         const memNo = document.getElementById('membershipNo').value;
         const name = document.getElementById('name').value;
@@ -100,55 +94,41 @@
         const amount = document.getElementById('amount').value;
         const method = document.getElementById('paymentMethod').value;
 
-        if(!memNo || !name || !club || !contact || !amount || !method || !fileInput.files[0]) {
-            alert('कृपया भौचर सहित सबै विवरणहरू भर्नुहोस् ।');
+        if(!memNo || !name || !club || !contact || !amount || !method) {
+            alert('कृपया सबै विवरणहरू भर्नुहोस् ।');
             return;
         }
 
         submitBtn.disabled = true;
-        submitBtn.innerText = "सिटमा डाटा सेभ हुँदैछ...";
+        submitBtn.innerText = "डाटा सेभ हुँदैछ...";
 
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            const fileData = {
-                bytes: Array.from(new Uint8Array(e.target.result)),
-                mimeType: file.type,
-                name: file.name
-            };
-
-            const formData = {
-                membershipNo: memNo,
-                name: name,
-                clubName: club,
-                contactNo: contact,
-                amount: amount,
-                paymentMethod: method,
-                voucherFile: fileData
-            };
-
-            // यहाँ Google Apps Script Web App को URL राख्नुहोला
-            var webAppUrl = "YOUR_APPS_SCRIPT_WEB_APP_URL";
-            
-            fetch(webAppUrl, {
-                method: 'POST',
-                body: JSON.stringify(formData)
-            })
-            .then(res => res.json())
-            .then(response => {
-                redirectToWhatsApp(formData, response.voucherUrl);
-            })
-            .catch(err => {
-                // त्रुटी आएपनि ह्वाट्सएपमा जान रोकिदैन
-                redirectToWhatsApp(formData, "");
-            });
+        const formData = {
+            membershipNo: memNo,
+            name: name,
+            clubName: club,
+            contactNo: contact,
+            amount: amount,
+            paymentMethod: method
         };
+
+        // यहाँ तपाईंको Google Apps Script को Web App Deployment URL राख्नुहोला
+        var webAppUrl = "YOUR_APPS_SCRIPT_WEB_APP_URL";
         
-        reader.readAsArrayBuffer(file);
+        fetch(webAppUrl, {
+            method: 'POST',
+            body: JSON.stringify(formData)
+        })
+        .then(res => res.json())
+        .then(response => {
+            redirectToWhatsApp(formData);
+        })
+        .catch(err => {
+            // कुनै त्रुटि आए पनि ह्वाट्सएप खुल्न रोकिँदैन
+            redirectToWhatsApp(formData);
+        });
     }
 
-    function redirectToWhatsApp(data, voucherUrl) {
+    function redirectToWhatsApp(data) {
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = false;
         submitBtn.innerText = "Submit & Send to WhatsApp";
@@ -162,14 +142,10 @@
                       `• *Contact Number:* ${data.contactNo}\n` +
                       `• *Contribution Amount:* $${data.amount}\n` +
                       `• *Payment Method:* ${data.paymentMethod}`;
-        
-        if(voucherUrl) {
-            message += `\n• *Voucher Link:* ${voucherUrl}`;
-        }
 
         const encodedMessage = encodeURIComponent(message);
         
-        // नयाँ नम्बर ९८४९२६०१६० (9779849260160) मा म्यासेज पठाइएको छ
+        // नयाँ ह्वाट्सएप नम्बर ९८४९२६०१६०
         const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
     }
