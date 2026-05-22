@@ -64,6 +64,11 @@
             </select>
         </div>
 
+        <div class="form-group">
+            <label>Upload Bank Voucher / Screenshot:</label>
+            <input type="file" id="voucherFile" accept="image/*">
+        </div>
+
         <div class="qr-section" id="qrSection">
             <div class="qr-title">Scan & Pay</div>
             <img src="qr-code.jpg" alt="LCIF Contribution QR">
@@ -110,19 +115,21 @@
             paymentMethod: method
         };
 
-        // ⚠️ यहाँ गुगल एप्स स्क्रिप्टबाट कपी गर्नुभएको Web App URL राख्नुहोला:
-        var webAppUrl = "https://script.google.com/macros/s/AKfycbxWOkWegxUN2ZGQ7EdYMnD5UqOr4P9vYmryqRXldkx-2Zgop36JsAnguPVYWMHQH9GXZg/exec";
+        // यहाँ तपाईंको गुगल एप्स स्क्रिप्टको Web App URL राख्नुहोला:
+        var webAppUrl = "YOUR_APPS_SCRIPT_WEB_APP_URL";
         
         fetch(webAppUrl, {
             method: 'POST',
             body: JSON.stringify(formData),
             headers: {
-                'Content-Type': 'text/plain;charset=utf-8' // CORS Issue फिक्स गर्न आवश्यक
+                'Content-Type': 'text/plain;charset=utf-8'
             }
         })
         .then(res => res.json())
         .then(response => {
             if(response.status === "success") {
+                // डाटा सिटमा सेभ भएपछि ह्वाट्सएप खोल्ने बेला सुचित गर्ने
+                alert("डाटा सफलतापूर्वक शीटमा सुरक्षित भयो। अब ह्वाट्सएप खुलेपछि आफ्नो ग्यालरीबाट अघि छनोट गरेको भौचरको फोटो अट्याच (Attach) गरी पठाउनुहोला।");
                 redirectToWhatsApp(formData);
             } else {
                 alert("सिटमा सेभ हुन सकेन: " + response.message);
@@ -130,7 +137,6 @@
             }
         })
         .catch(err => {
-            // नेटवर्क वा सेभमा समस्या आए पनि ह्वाट्सएप खुल्न रोकिँदैन
             redirectToWhatsApp(formData);
         });
     }
@@ -140,7 +146,6 @@
         submitBtn.disabled = false;
         submitBtn.innerText = "Submit & Send to WhatsApp";
 
-        // तपाईंले माग गर्नुभएको हुबहु नेपाली फर्म्याट
         let message = `नमस्ते लायन प्रविन प्रसाद लाकोल ज्यू,\n\n` +
                       `LCIF योगदान (2026-2027) को लागि मेरो सहयोग विवरण यस प्रकार छ:\n\n` +
                       `• *Membership No.:* ${data.membershipNo}\n` +
@@ -155,7 +160,6 @@
         const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
         
-        // फारम खाली (Reset) गर्ने
         document.getElementById('commitmentForm').reset();
         document.getElementById('qrSection').style.display = 'none';
     }
