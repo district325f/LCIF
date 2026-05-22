@@ -1,152 +1,260 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html>
 <head>
-    <base target="_top">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LCIF Contribution Commitment</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .form-container { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        .header { text-align: center; margin-bottom: 25px; color: #003366; }
-        .header h2 { margin: 0; font-size: 22px; font-weight: bold; }
-        .header h3 { margin: 5px 0 0 0; font-size: 16px; color: #555; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .qr-section { text-align: center; margin: 20px 0; padding: 15px; border: 1px dashed #003366; border-radius: 8px; background: #fafafa; display: none; }
-        .qr-section img { max-width: 220px; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .qr-title { font-weight: bold; color: #003366; margin-bottom: 10px; font-size: 16px; }
-        .btn-submit { width: 100%; background-color: #25D366; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
-        .btn-submit:hover { background-color: #128C7E; }
-        .btn-submit:disabled { background-color: #cccccc; cursor: not-allowed; }
-        .footer { text-align: center; margin-top: 25px; font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 15px; }
-        .footer a { color: #1877F2; text-decoration: none; font-weight: bold; }
-        .footer a:hover { text-decoration: underline; }
-    </style>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --primary: #1a73e8; --glass: rgba(255, 255, 255, 0.75);
+      --border: rgba(255, 255, 255, 0.4); --success: #10b981;
+      --accent: #6366f1; --danger: #ef4444;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+      font-family: 'Inter', sans-serif; margin: 0; padding: 20px;
+      display: flex; justify-content: center; min-height: 100vh;
+    }
+
+    .wrap { width: 100%; max-width: 950px; }
+
+    .card {
+      background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--border); border-radius: 24px; padding: 35px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); margin-bottom: 25px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a, #4f46e5); color: white; border: none;
+      padding: 25px 35px; text-align: center;
+    }
+
+    .stepper { display: flex; justify-content: space-between; margin-bottom: 30px; }
+    .step { width: 32%; text-align: center; font-size: 11px; font-weight: 800; color: #94a3b8; }
+    .step.active { color: var(--primary); }
+    .step-circle { width: 30px; height: 30px; background: white; border: 2px solid #e2e8f0; border-radius: 50%; 
+                   margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; }
+    .step.active .step-circle { border-color: var(--primary); background: var(--primary); color: white; box-shadow: 0 0 15px rgba(26,115,232,0.3); }
+
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .full { grid-column: 1 / -1; }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 8px; color: #475569; text-transform: uppercase; }
+    input, select {
+      width: 100%; padding: 14px; background: rgba(255,255,255,0.6); border: 1.5px solid #e2e8f0;
+      border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: 0.3s;
+    }
+    input:focus { border-color: var(--primary); background: white; outline: none; box-shadow: 0 0 0 4px rgba(26,115,232,0.1); }
+    
+    input.error-field, select.error-field { border-color: var(--danger) !important; background: #fff1f2; }
+
+    .btn { padding: 16px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; border: none; font-size: 14px; width: 100%; }
+    .btn-next { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(26,115,232,0.3); }
+    .btn-back { background: #f1f5f9; color: #64748b; margin-top: 10px; }
+
+    #translationBox { display: none; border-left: 6px solid var(--accent); }
+    .preview-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: rgba(255,255,255,0.4); border-radius: 15px; overflow: hidden; }
+    .preview-table td { padding: 12px 15px; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 14px; }
+
+    #error { color: var(--danger); font-weight: 700; font-size: 13px; margin-top: 15px; text-align: center; }
+    iframe { width: 100%; height: 750px; border: 1px solid var(--border); border-radius: 24px; display: none; margin-top: 25px; background: white; }
+  </style>
 </head>
 <body>
 
-<div class="form-container">
-    <div class="header">
-        <h2>Lions International</h2>
-        <h3>District 325 F</h3>
-        <h4 style="margin: 10px 0 0 0; color: #d9534f;">LCIF Contribution Commitment</h4>
+<div class="wrap">
+  <div class="card hero">
+    <h2 style="margin:0">Japan Statement Generator 2083</h2>
+    <p>Target Sheet: LCIF Commitment | Multiple of 1000 Rule</p>
+  </div>
+
+  <div class="card">
+    <div class="stepper">
+      <div class="step active" id="s1"><div class="step-circle">1</div>BANK INFO</div>
+      <div class="step" id="s2"><div class="step-circle">2</div>TRANSACTIONS</div>
+      <div class="step" id="s3"><div class="step-circle">3</div>BALANCE</div>
     </div>
 
-    <form id="commitmentForm">
-        <div class="form-group">
-            <label>Membership No.:</label>
-            <input type="text" id="membershipNo" required>
-        </div>
-        <div class="form-group">
-            <label>Name:</label>
-            <input type="text" id="name" required>
-        </div>
-        <div class="form-group">
-            <label>Club Name:</label>
-            <input type="text" id="clubName" required>
-        </div>
-        <div class="form-group">
-            <label>Contact Number:</label>
-            <input type="tel" id="contactNo" required>
-        </div>
-        <div class="form-group">
-            <label>Contribution Amount ($):</label>
-            <input type="number" id="amount" required>
-        </div>
-        <div class="form-group">
-            <label>Payment Method:</label>
-            <select id="paymentMethod" onchange="toggleQR(this.value)" required>
-                <option value="">Select Method</option>
-                <option value="Cash">Cash</option>
-                <option value="Cheque">Cheque</option>
-                <option value="QR Payment">QR Payment</option>
-            </select>
-        </div>
-
-        <div class="qr-section" id="qrSection">
-            <div class="qr-title">Scan & Pay</div>
-            <img src="qr-code.jpg" alt="LCIF Contribution QR">
-        </div>
-
-        <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit & Send to WhatsApp</button>
-    </form>
-
-    <div class="footer">
-        Design by : <a href="https://www.facebook.com/nirajan.aryal.9" target="_blank">Nirajan Aryal</a> | 9851113811
+    <div class="form-step active" id="step1">
+      <div class="grid">
+        <div class="full"><label>Format / Donation Category</label><select id="format" required><option value="">Select format</option></select></div>
+        <div><label>From Date</label><input type="date" id="from" onchange="validateDates()" required></div>
+        <div><label>To Date</label><input type="date" id="to" onchange="validateDates()" required></div>
+      </div>
+      <button class="btn btn-next" style="margin-top:25px" onclick="nextIfValid(1, 2)">Next: Transaction Details</button>
     </div>
+
+    <div class="form-step" id="step2">
+      <div class="grid">
+        <div><label>Total Transactions</label><input type="number" id="count" min="1" required></div>
+        <div><label>Cheque Transactions</label><input type="number" id="chequeCount" min="0" required></div>
+        <div class="full"><label>Starting Cheque Number</label><input type="text" id="startingChequeNumber" required></div>
+      </div>
+      <button class="btn btn-next" style="margin-top:25px" onclick="nextIfValid(2, 3)">Next: Balance Info</button>
+      <button class="btn btn-back" onclick="goToStep(1)">← Back</button>
+    </div>
+
+    <div class="form-step" id="step3">
+      <div class="grid">
+        <div><label>Opening Balance</label><input type="text" id="openingBalance" required></div>
+        <div><label>Closing Balance (Amount must be a multiple of 1,000)</label>
+          <input type="number" id="closingBalance" step="1000" oninput="validateHazar()" placeholder="Ex: 2450000" required>
+        </div>
+      </div>
+      <button class="btn btn-next" style="margin-top:25px; background: #4f46e5;" onclick="preparePreview()">Review & Create</button>
+      <button class="btn btn-back" onclick="goToStep(2)">← Back</button>
+    </div>
+
+    <div id="error"></div>
+  </div>
+
+  <div class="card" id="translationBox">
+    <h3 style="margin:0; font-size: 18px; color: var(--accent)">Translation Preview</h3>
+    <table class="preview-table"><tbody id="previewBody"></tbody></table>
+    <div class="grid" style="margin-top:20px">
+      <button id="confirmBtn" class="btn btn-next" style="background:var(--success)" onclick="runCreate()">सबै ठिक छ, सिटमा पठाउनुहोस्</button>
+      <button class="btn btn-back" style="margin:0" onclick="cancelPreview()">सच्याउनुहोस्</button>
+    </div>
+  </div>
+
+  <div id="resultCard" style="display:none" class="card">
+    <div id="result"></div>
+    <a id="sheetLink" target="_blank" style="color:var(--primary); font-weight:700; display:block; margin-top:10px">→ Open LCIF Sheet</a>
+  </div>
+  <iframe id="sheetFrame"></iframe>
 </div>
 
 <script>
-    function toggleQR(value) {
-        const qrSection = document.getElementById('qrSection');
-        qrSection.style.display = (value === 'QR Payment') ? 'block' : 'none';
+let currentPayload = null;
+
+function loadFormats() {
+  google.script.run.withSuccessHandler(function(list) {
+    const sel = document.getElementById('format');
+    sel.innerHTML = '<option value="">Select Format / Category</option>';
+    (list || []).forEach(name => {
+      const o = document.createElement('option'); o.value = name; o.textContent = name; sel.appendChild(o);
+    });
+  }).getFormatList();
+}
+
+// १. मिति चेक गर्ने कडा नियम (Step 1 Validation)
+function validateDates() {
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const errorDiv = document.getElementById('error');
+  
+  if (from && to) {
+    const dFrom = new Date(from);
+    const dTo = new Date(to);
+    
+    if (dFrom > dTo) {
+      errorDiv.textContent = "ScriptError: Error: Valid dates पर्याप्त छैन!";
+      document.getElementById('from').classList.add('error-field');
+      document.getElementById('to').classList.add('error-field');
+      return false;
     }
+  }
+  errorDiv.textContent = "";
+  document.getElementById('from').classList.remove('error-field');
+  document.getElementById('to').classList.remove('error-field');
+  return true;
+}
 
-    function submitData() {
-        const submitBtn = document.getElementById('submitBtn');
-        
-        const memNo = document.getElementById('membershipNo').value;
-        const name = document.getElementById('name').value;
-        const club = document.getElementById('clubName').value;
-        const contact = document.getElementById('contactNo').value;
-        const amount = document.getElementById('amount').value;
-        const method = document.getElementById('paymentMethod').value;
+function nextIfValid(curr, next) {
+  const stepDiv = document.getElementById('step' + curr);
+  const inputs = stepDiv.querySelectorAll('input[required], select[required]');
+  let ok = true;
 
-        if(!memNo || !name || !club || !contact || !amount || !method) {
-            alert('कृपया सबै विवरणहरू भर्नुहोस् ।');
-            return;
-        }
+  inputs.forEach(i => {
+    if (!i.value) { i.classList.add('error-field'); ok = false; }
+    else { i.classList.remove('error-field'); }
+  });
 
-        submitBtn.disabled = true;
-        submitBtn.innerText = "डाटा सेभ हुँदैछ...";
+  if (curr === 1 && !validateDates()) return; 
 
-        const formData = {
-            membershipNo: memNo,
-            name: name,
-            clubName: club,
-            contactNo: contact,
-            amount: amount,
-            paymentMethod: method
-        };
+  if (ok) { goToStep(next); document.getElementById('error').textContent = ""; }
+  else { document.getElementById('error').textContent = "कृपया सबै बक्सहरू अनिवार्य रूपमा भर्नुहोस्!"; }
+}
 
-        // यहाँ तपाईंको Google Apps Script को Web App Deployment URL राख्नुहोला
-        var webAppUrl = "YOUR_APPS_SCRIPT_WEB_APP_URL";
-        
-        fetch(webAppUrl, {
-            method: 'POST',
-            body: JSON.stringify(formData)
-        })
-        .then(res => res.json())
-        .then(response => {
-            redirectToWhatsApp(formData);
-        })
-        .catch(err => {
-            redirectToWhatsApp(formData);
-        });
-    }
+function goToStep(s) {
+  document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+  document.getElementById('step' + s).classList.add('active');
+  document.getElementById('s' + s).classList.add('active');
+}
 
-    function redirectToWhatsApp(data) {
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Submit & Send to WhatsApp";
+// २. हजारको नियम चेक (Closing Balance Rules)
+function validateHazar() {
+  const input = document.getElementById('closingBalance');
+  const val = parseFloat(input.value);
+  const errorDiv = document.getElementById('error');
+  
+  if (!input.value || val % 1000 !== 0 || input.value.includes('.')) {
+    input.classList.add('error-field');
+    errorDiv.textContent = "Amount must be a multiple of 1,000 (हजारले भाग जाने रकम मात्र हाल्नुहोस्) !";
+    return false;
+  }
+  input.classList.remove('error-field');
+  errorDiv.textContent = "";
+  return true;
+}
 
-        // नयाँ म्यासेज फम्र्याट (विवरण बीचमा र नयाँ वाक्य अन्तिममा)
-        let message = `नमस्ते लायन प्रवीन प्रसाद लाकोल ज्यू,\n\n` +
-                      `• *Membership No.:* ${data.membershipNo}\n` +
-                      `• *Name:* ${data.name}\n` +
-                      `• *Club Name:* ${data.clubName}\n` +
-                      `• *Contact Number:* ${data.contactNo}\n` +
-                      `• *Contribution Amount:* $${data.amount}\n` +
-                      `• *Payment Method:* ${data.paymentMethod}\n\n` +
-                      `मैले बैंक भौचरको फोटो यसै साथ संलग्न गरेको छु ।`;
+function preparePreview() {
+  const step3 = document.getElementById('step3');
+  let step3Ok = true;
+  step3.querySelectorAll('input[required]').forEach(i => {
+    if(!i.value) { i.classList.add('error-field'); step3Ok = false; }
+  });
+  
+  if(!step3Ok) { document.getElementById('error').textContent = "कृपया ब्यालेन्स विवरण भर्नुहोस्!"; return; }
+  if (!validateHazar()) return;
+  
+  currentPayload = {
+    format: document.getElementById('format').value,
+    from: document.getElementById('from').value,
+    to: document.getElementById('to').value,
+    count: document.getElementById('count').value,
+    chequeCount: document.getElementById('chequeCount').value,
+    startingChequeNumber: document.getElementById('startingChequeNumber').value,
+    openingBalance: document.getElementById('openingBalance').value,
+    closingBalance: document.getElementById('closingBalance').value
+  };
 
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
-    }
+  document.getElementById('previewBody').innerHTML = `
+    <tr><td><b>Category/Bank</b></td><td>${currentPayload.format}</td></tr>
+    <tr><td><b>Duration</b></td><td>${currentPayload.from} to ${currentPayload.to}</td></tr>
+    <tr><td><b>Transactions</b></td><td>${currentPayload.count} (Cheques: ${currentPayload.chequeCount})</td></tr>
+    <tr><td><b>Commitment Balance</b></td><td>${currentPayload.openingBalance} → <b>${currentPayload.closingBalance}</b></td></tr>
+  `;
+  document.getElementById('translationBox').style.display = 'block';
+  document.getElementById('translationBox').scrollIntoView({behavior: "smooth"});
+}
+
+function runCreate() {
+  document.getElementById('confirmBtn').disabled = true;
+  document.getElementById('confirmBtn').textContent = 'LCIF सिटमा जाँदैछ...';
+  
+  google.script.run.withSuccessHandler(res => {
+    document.getElementById('translationBox').style.display = 'none';
+    document.getElementById('result').innerHTML = `<b>सफलतापूर्वक सुरक्षित गरियो!</b><br>सिटको नाम: ${res.sheetName}<br>कुल रेकर्ड: ${res.totalRowsWritten} रो`;
+    document.getElementById('sheetLink').href = res.sheetUrl;
+    document.getElementById('sheetFrame').src = res.sheetUrl;
+    document.getElementById('resultCard').style.display = 'block';
+    document.getElementById('sheetFrame').style.display = 'block';
+    document.getElementById('error').textContent = "";
+  }).withFailureHandler(err => {
+    document.getElementById('error').textContent = String(err);
+    document.getElementById('confirmBtn').disabled = false;
+    document.getElementById('confirmBtn').textContent = 'पुनः प्रयास गर्नुहोस्';
+  }).createStatement(currentPayload);
+}
+
+function cancelPreview() { document.getElementById('translationBox').style.display = 'none'; }
+loadFormats();
 </script>
-
 </body>
 </html>
