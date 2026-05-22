@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ne">
 <head>
-    <base target="_top">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LCIF Contribution Commitment</title>
@@ -111,19 +110,27 @@
             paymentMethod: method
         };
 
-        // यहाँ माथि कपी गर्नुभएको Google Apps Script को नयाँ Deployment URL पेस्ट गर्नुहोस्:
+        // ⚠️ यहाँ गुगल एप्स स्क्रिप्टबाट कपी गर्नुभएको Web App URL राख्नुहोला:
         var webAppUrl = "YOUR_APPS_SCRIPT_WEB_APP_URL";
         
         fetch(webAppUrl, {
             method: 'POST',
-            body: JSON.stringify(formData)
+            body: JSON.stringify(formData),
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8' // CORS Issue फिक्स गर्न आवश्यक
+            }
         })
         .then(res => res.json())
         .then(response => {
-            redirectToWhatsApp(formData);
+            if(response.status === "success") {
+                redirectToWhatsApp(formData);
+            } else {
+                alert("सिटमा सेभ हुन सकेन: " + response.message);
+                redirectToWhatsApp(formData);
+            }
         })
         .catch(err => {
-            // कुनै भुल भएपनि ह्वाट्सएप खुल्न रोकिदैन
+            // नेटवर्क वा सेभमा समस्या आए पनि ह्वाट्सएप खुल्न रोकिँदैन
             redirectToWhatsApp(formData);
         });
     }
@@ -133,7 +140,7 @@
         submitBtn.disabled = false;
         submitBtn.innerText = "Submit & Send to WhatsApp";
 
-        // तपाईंले भन्नुभए अनुसारको नयाँ नेपाली टेक्स्ट फर्म्याट
+        // तपाईंले माग गर्नुभएको हुबहु नेपाली फर्म्याट
         let message = `नमस्ते लायन प्रविन प्रसाद लाकोल ज्यू,\n\n` +
                       `LCIF योगदान (2026-2027) को लागि मेरो सहयोग विवरण यस प्रकार छ:\n\n` +
                       `• *Membership No.:* ${data.membershipNo}\n` +
@@ -147,6 +154,10 @@
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
+        
+        // फारम खाली (Reset) गर्ने
+        document.getElementById('commitmentForm').reset();
+        document.getElementById('qrSection').style.display = 'none';
     }
 </script>
 
