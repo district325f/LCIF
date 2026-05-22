@@ -15,8 +15,9 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px; }
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         .qr-section { text-align: center; margin: 20px 0; padding: 15px; border: 1px dashed #003366; border-radius: 8px; background: #fafafa; display: none; }
-        .qr-section img { max-width: 200px; height: auto; }
-        .qr-title { font-weight: bold; color: #003366; margin-bottom: 10px; }
+        .qr-section img { max-width: 220px; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .qr-title { font-weight: bold; color: #003366; margin-bottom: 5px; font-size: 16px; }
+        .qr-details { font-size: 12px; color: #555; margin-bottom: 12px; line-height: 1.4; }
         .btn-submit { width: 100%; background-color: #25D366; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
         .btn-submit:hover { background-color: #128C7E; }
         .btn-submit:disabled { background-color: #cccccc; cursor: not-allowed; }
@@ -67,14 +68,18 @@
 
         <div class="qr-section" id="qrSection">
             <div class="qr-title">Scan & Pay</div>
-            <img src="qr-code.jpg" alt="Siddhartha Bank QR">
+            <div class="qr-details">
+                <strong>A/C Name:</strong> LIONS CLUBS INTERNATIONAL DIST 325 F<br>
+                <strong>Bank:</strong> Siddhartha Bank Ltd.
+            </div>
+            <img src="qr-code.jpg" alt="LCIF Contribution QR">
         </div>
 
         <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit & Send to WhatsApp</button>
     </form>
 
     <div class="footer">
-        Design by : <a href="https://www.facebook.com/nirajan.aryal.92" target="_blank">Nirajan Aryal</a> | 9851113811
+        Design by : <a href="https://www.facebook.com/nirajan.aryal.9" target="_blank">Nirajan Aryal</a> | 9851113811
     </div>
 </div>
 
@@ -123,7 +128,6 @@
             redirectToWhatsApp(formData);
         })
         .catch(err => {
-            // कुनै त्रुटि आए पनि ह्वाट्सएप खुल्न रोकिँदैन
             redirectToWhatsApp(formData);
         });
     }
@@ -133,9 +137,8 @@
         submitBtn.disabled = false;
         submitBtn.innerText = "Submit & Send to WhatsApp";
 
-        let message = `*Lions International*\n` +
-                      `*District 325 F*\n` +
-                      `*LCIF Contribution Commitment*\n\n` +
+        // तपाईंको चाहना बमोजिम परिमार्जित म्यासेज संरचना
+        let message = `नमस्ते लायन प्रविन प्रसाद लाकोल ज्यू,\n\n` +
                       `• *Membership No.:* ${data.membershipNo}\n` +
                       `• *Name:* ${data.name}\n` +
                       `• *Club Name:* ${data.clubName}\n` +
@@ -144,8 +147,6 @@
                       `• *Payment Method:* ${data.paymentMethod}`;
 
         const encodedMessage = encodeURIComponent(message);
-        
-        // नयाँ ह्वाट्सएप नम्बर ९८४९२६०१६०
         const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
         window.open(whatsappUrl, '_blank');
     }
