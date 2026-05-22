@@ -1,1 +1,179 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCIF Contribution Commitment</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .form-container { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        .header { text-align: center; margin-bottom: 25px; color: #003366; }
+        .header h2 { margin: 0; font-size: 22px; font-weight: bold; }
+        .header h3 { margin: 5px 0 0 0; font-size: 16px; color: #555; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .qr-section { text-align: center; margin: 20px 0; padding: 15px; border: 1px dashed #003366; border-radius: 8px; background: #fafafa; display: none; }
+        .qr-section img { max-width: 200px; height: auto; }
+        .qr-title { font-weight: bold; color: #003366; margin-bottom: 10px; }
+        .btn-submit { width: 100%; background-color: #25D366; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
+        .btn-submit:hover { background-color: #128C7E; }
+        .btn-submit:disabled { background-color: #cccccc; cursor: not-allowed; }
+        .footer { text-align: center; margin-top: 25px; font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 15px; }
+        .footer a { color: #1877F2; text-decoration: none; font-weight: bold; }
+        .footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
 
+<div class="form-container">
+    <div class="header">
+        <h2>Lions International</h2>
+        <h3>District 325 F</h3>
+        <h4 style="margin: 10px 0 0 0; color: #d9534f;">LCIF Contribution Commitment</h4>
+    </div>
+
+    <form id="commitmentForm">
+        <div class="form-group">
+            <label>Membership No.:</label>
+            <input type="text" id="membershipNo" required>
+        </div>
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+            <label>Club Name:</label>
+            <input type="text" id="clubName" required>
+        </div>
+        <div class="form-group">
+            <label>Contact Number:</label>
+            <input type="tel" id="contactNo" required>
+        </div>
+        <div class="form-group">
+            <label>Contribution Amount ($):</label>
+            <input type="number" id="amount" required>
+        </div>
+        <div class="form-group">
+            <label>Payment Method:</label>
+            <select id="paymentMethod" onchange="toggleQR(this.value)" required>
+                <option value="">Select Method</option>
+                <option value="Cash">Cash</option>
+                <option value="Cheque">Cheque</option>
+                <option value="QR Payment">QR Payment</option>
+            </select>
+        </div>
+
+        <div class="qr-section" id="qrSection">
+            <div class="qr-title">Scan & Pay</div>
+            <img src="https://i.ibb.co/3mN9fNz/1000148581.jpg" alt="Siddhartha Bank QR">
+        </div>
+
+        <div class="form-group">
+            <label>Upload Voucher / Receipt:</label>
+            <input type="file" id="voucherFile" accept="image/*" required>
+        </div>
+
+        <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit & Send to WhatsApp</button>
+    </form>
+
+    <div class="footer">
+        Design by : <a href="https://www.facebook.com/nirajan.aryal.9" target="_blank">Nirajan Aryal</a> | 9851113811
+    </div>
+</div>
+
+<script>
+    function toggleQR(value) {
+        const qrSection = document.getElementById('qrSection');
+        qrSection.style.display = (value === 'QR Payment') ? 'block' : 'none';
+    }
+
+    function submitData() {
+        const submitBtn = document.getElementById('submitBtn');
+        const fileInput = document.getElementById('voucherFile');
+        
+        const memNo = document.getElementById('membershipNo').value;
+        const name = document.getElementById('name').value;
+        const club = document.getElementById('clubName').value;
+        const contact = document.getElementById('contactNo').value;
+        const amount = document.getElementById('amount').value;
+        const method = document.getElementById('paymentMethod').value;
+
+        if(!memNo || !name || !club || !contact || !amount || !method || !fileInput.files[0]) {
+            alert('कृपया भौचर सहित सबै विवरणहरू भर्नुहोस् ।');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "सिटमा डाटा सेभ हुँदैछ...";
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const fileData = {
+                bytes: Array.from(new Uint8Array(e.target.result)),
+                mimeType: file.type,
+                name: file.name
+            };
+
+            const formData = {
+                membershipNo: memNo,
+                name: name,
+                clubName: club,
+                contactNo: contact,
+                amount: amount,
+                paymentMethod: method,
+                voucherFile: fileData
+            };
+
+            // यहाँ Google Apps Script Web App को URL राख्नुहोला
+            var webAppUrl = "YOUR_APPS_SCRIPT_WEB_APP_URL";
+            
+            fetch(webAppUrl, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(response => {
+                redirectToWhatsApp(formData, response.voucherUrl);
+            })
+            .catch(err => {
+                // त्रुटी आएपनि ह्वाट्सएपमा जान रोकिदैन
+                redirectToWhatsApp(formData, "");
+            });
+        };
+        
+        reader.readAsArrayBuffer(file);
+    }
+
+    function redirectToWhatsApp(data, voucherUrl) {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit & Send to WhatsApp";
+
+        let message = `*Lions International*\n` +
+                      `*District 325 F*\n` +
+                      `*LCIF Contribution Commitment*\n\n` +
+                      `• *Membership No.:* ${data.membershipNo}\n` +
+                      `• *Name:* ${data.name}\n` +
+                      `• *Club Name:* ${data.clubName}\n` +
+                      `• *Contact Number:* ${data.contactNo}\n` +
+                      `• *Contribution Amount:* $${data.amount}\n` +
+                      `• *Payment Method:* ${data.paymentMethod}`;
+        
+        if(voucherUrl) {
+            message += `\n• *Voucher Link:* ${voucherUrl}`;
+        }
+
+        const encodedMessage = encodeURIComponent(message);
+        
+        // नयाँ नम्बर ९८४९२६०१६० (9779849260160) मा म्यासेज पठाइएको छ
+        const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    }
+</script>
+
+</body>
+</html>
