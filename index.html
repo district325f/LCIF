@@ -110,7 +110,6 @@
             paymentMethod: method
         };
 
-        // ⚠️ यहाँ तपाईंको गुगल स्क्रिप्टको Web App URL पेस्ट गर्नुहोला:
         var webAppUrl = "https://script.google.com/macros/s/AKfycbxWOkWegxUN2ZGQ7EdYMnD5UqOr4P9vYmryqRXldkx-2Zgop36JsAnguPVYWMHQH9GXZg/exec";
         
         fetch(webAppUrl, {
@@ -132,10 +131,6 @@
     }
 
     function redirectToWhatsApp(data) {
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Submit & Send to WhatsApp";
-
         // तपाईँले भन्नुभए अनुसारको सटिक नेपाली टेक्स्ट संरचना
         let message = `नमस्ते लायन प्रविन प्रसाद लाकोल ज्यू,\n\n` +
                       `LCIF योगदान (2026-2027) को लागि मेरो सहयोग विवरण यस प्रकार छ:\n\n` +
@@ -149,9 +144,14 @@
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
+        
+        // पहिले ह्वाट्सएप विन्डो खोल्ने
         window.open(whatsappUrl, '_blank');
         
-        // फारम र क्युआर कोठा रिसेट गर्ने
+        // विन्डो खुलिसकेपछि मात्र बटन र फारम रिसेट गर्ने (डाटा ओभरराइट वा ब्ल्याङ्क हुनबाट जोगाउन)
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit & Send to WhatsApp";
         document.getElementById('commitmentForm').reset();
         document.getElementById('qrSection').style.display = 'none';
     }
