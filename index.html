@@ -69,7 +69,7 @@
 <div class="wrap">
   <div class="card hero">
     <h2 style="margin:0">Japan Statement Generator 2083</h2>
-    <p>Target Sheet: LCIF Commitment | Multiple of 1000 Rule</p>
+    <p>Advanced Crystal Stepper | Client-Side Strict Validation</p>
   </div>
 
   <div class="card">
@@ -81,7 +81,7 @@
 
     <div class="form-step active" id="step1">
       <div class="grid">
-        <div class="full"><label>Format / Donation Category</label><select id="format" required><option value="">Select format</option></select></div>
+        <div class="full"><label>Format</label><select id="format" required><option value="">Select format</option></select></div>
         <div><label>From Date</label><input type="date" id="from" onchange="validateDates()" required></div>
         <div><label>To Date</label><input type="date" id="to" onchange="validateDates()" required></div>
       </div>
@@ -123,7 +123,7 @@
 
   <div id="resultCard" style="display:none" class="card">
     <div id="result"></div>
-    <a id="sheetLink" target="_blank" style="color:var(--primary); font-weight:700; display:block; margin-top:10px">→ Open LCIF Sheet</a>
+    <a id="sheetLink" target="_blank" style="color:var(--primary); font-weight:700; display:block; margin-top:10px">→ Open Sheet</a>
   </div>
   <iframe id="sheetFrame"></iframe>
 </div>
@@ -131,17 +131,18 @@
 <script>
 let currentPayload = null;
 
+// पुरानो Code.gs को फङ्सनलाई सिधै कल गर्छ, केही नबिगारी
 function loadFormats() {
   google.script.run.withSuccessHandler(function(list) {
     const sel = document.getElementById('format');
-    sel.innerHTML = '<option value="">Select Format / Category</option>';
+    sel.innerHTML = '<option value="">Select format</option>';
     (list || []).forEach(name => {
       const o = document.createElement('option'); o.value = name; o.textContent = name; sel.appendChild(o);
     });
   }).getFormatList();
 }
 
-// १. मिति चेक गर्ने कडा नियम (Step 1 Validation)
+// १. पहिलो स्टेपमै मिति चेक गर्ने (फ्रन्टइन्ड लक)
 function validateDates() {
   const from = document.getElementById('from').value;
   const to = document.getElementById('to').value;
@@ -174,7 +175,7 @@ function nextIfValid(curr, next) {
     else { i.classList.remove('error-field'); }
   });
 
-  if (curr === 1 && !validateDates()) return; 
+  if (curr === 1 && !validateDates()) return; // मिति बिग्रिएमा रोक्ने
 
   if (ok) { goToStep(next); document.getElementById('error').textContent = ""; }
   else { document.getElementById('error').textContent = "कृपया सबै बक्सहरू अनिवार्य रूपमा भर्नुहोस्!"; }
@@ -187,7 +188,7 @@ function goToStep(s) {
   document.getElementById('s' + s).classList.add('active');
 }
 
-// २. हजारको नियम चेक (Closing Balance Rules)
+// २. हजारको मात्र गुणांक चेक गर्ने नियम
 function validateHazar() {
   const input = document.getElementById('closingBalance');
   const val = parseFloat(input.value);
@@ -225,10 +226,10 @@ function preparePreview() {
   };
 
   document.getElementById('previewBody').innerHTML = `
-    <tr><td><b>Category/Bank</b></td><td>${currentPayload.format}</td></tr>
+    <tr><td><b>Bank</b></td><td>${currentPayload.format}</td></tr>
     <tr><td><b>Duration</b></td><td>${currentPayload.from} to ${currentPayload.to}</td></tr>
     <tr><td><b>Transactions</b></td><td>${currentPayload.count} (Cheques: ${currentPayload.chequeCount})</td></tr>
-    <tr><td><b>Commitment Balance</b></td><td>${currentPayload.openingBalance} → <b>${currentPayload.closingBalance}</b></td></tr>
+    <tr><td><b>Closing Balance</b></td><td>${currentPayload.openingBalance} → <b>${currentPayload.closingBalance}</b></td></tr>
   `;
   document.getElementById('translationBox').style.display = 'block';
   document.getElementById('translationBox').scrollIntoView({behavior: "smooth"});
@@ -236,11 +237,12 @@ function preparePreview() {
 
 function runCreate() {
   document.getElementById('confirmBtn').disabled = true;
-  document.getElementById('confirmBtn').textContent = 'LCIF सिटमा जाँदैछ...';
+  document.getElementById('confirmBtn').textContent = 'Processing...';
   
+  // पुरानो Code.gs को createStatement फङ्सनलाई नै कल गर्छ
   google.script.run.withSuccessHandler(res => {
     document.getElementById('translationBox').style.display = 'none';
-    document.getElementById('result').innerHTML = `<b>सफलतापूर्वक सुरक्षित गरियो!</b><br>सिटको नाम: ${res.sheetName}<br>कुल रेकर्ड: ${res.totalRowsWritten} रो`;
+    document.getElementById('result').innerHTML = `<b>सफलतापूर्वक सुरक्षित गरियो!</b><br>सिट: ${res.sheetName || 'Updated'}`;
     document.getElementById('sheetLink').href = res.sheetUrl;
     document.getElementById('sheetFrame').src = res.sheetUrl;
     document.getElementById('resultCard').style.display = 'block';
