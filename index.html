@@ -1,161 +1,594 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LCIF Contribution Commitment</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .form-container { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        .header { text-align: center; margin-bottom: 25px; color: #003366; }
-        .header h2 { margin: 0; font-size: 22px; font-weight: bold; }
-        .header h3 { margin: 5px 0 0 0; font-size: 16px; color: #555; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .qr-section { text-align: center; margin: 20px 0; padding: 15px; border: 1px dashed #003366; border-radius: 8px; background: #fafafa; display: none; }
-        .qr-section img { max-width: 220px; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .qr-title { font-weight: bold; color: #003366; margin-bottom: 10px; font-size: 16px; }
-        .btn-submit { width: 100%; background-color: #25D366; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
-        .btn-submit:hover { background-color: #128C7E; }
-        .btn-submit:disabled { background-color: #cccccc; cursor: not-allowed; }
-        .footer { text-align: center; margin-top: 25px; font-size: 13px; color: #666; border-top: 1px solid #eee; padding-top: 15px; }
-        .footer a { color: #1877F2; text-decoration: none; font-weight: bold; }
-        .footer a:hover { text-decoration: underline; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LCIF Contribution Management</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: #eef4f5;
+    color: #123c4b;
+    margin: 0;
+    padding: 28px 16px;
+}
+.container {
+    max-width: 1080px;
+    margin: auto;
+}
+.card {
+    background: white;
+    border-radius: 18px;
+    border-top: 4px solid #ceaf45;
+    box-shadow: 0 8px 30px #123c4b0c;
+    padding: 28px;
+    margin-bottom: 22px;
+}
+.form-card {
+    max-width: 560px;
+    margin: 0 auto 26px;
+}
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.logo {
+    width: 78px;
+    height: 78px;
+    object-fit: contain;
+}
+h1 {
+    font-size: 25px;
+    margin: 12px 0 6px;
+}
+h2 {
+    font-size: 23px;
+    margin: 5px 0 8px;
+}
+h3 {
+    font-size: 17px;
+    margin: 8px 0;
+}
+.muted {
+    color: #718692;
+    font-size: 13px;
+}
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 16px 0 7px;
+}
+input, select {
+    width: 100%;
+    border: 1px solid #cbd9df;
+    border-radius: 7px;
+    padding: 12px;
+    font-size: 15px;
+    color: #123c4b;
+    background: white;
+}
+input[readonly] {
+    background: #f4f8fa;
+}
+input:focus, select:focus {
+    outline: 2px solid #128080;
+    outline-offset: 1px;
+}
+button, .link-button {
+    border: 0;
+    border-radius: 8px;
+    background: #086b70;
+    color: white;
+    padding: 12px 17px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+}
+button:hover {
+    background: #07545b;
+}
+button:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+.full {
+    width: 100%;
+    margin-top: 20px;
+}
+.small {
+    padding: 7px 12px;
+    font-size: 12px;
+}
+.gold {
+    background: #c49726;
+}
+.message {
+    min-height: 20px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: #087164;
+}
+.error {
+    color: #b02b39;
+}
+.qr {
+    text-align: center;
+    padding: 18px;
+    border: 1px dashed #086b70;
+    margin-top: 20px;
+}
+.qr img {
+    max-width: 220px;
+    width: 100%;
+}
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+}
+.stat {
+    background: #f3f8fa;
+    border: 1px solid #d9e7eb;
+    border-radius: 12px;
+    padding: 16px;
+}
+.stat span {
+    display: block;
+    font-size: 11px;
+    color: #718692;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.stat strong {
+    font-size: 20px;
+}
+.table-wrap {
+    overflow: auto;
+    border: 1px solid #dbe7eb;
+    border-radius: 10px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+th {
+    background: #075762;
+    color: white;
+    text-align: left;
+    padding: 15px 12px;
+    white-space: nowrap;
+}
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e0e9ec;
+    overflow-wrap: anywhere;
+}
+tbody tr:nth-child(even) {
+    background: #f5f9fa;
+}
+.amount {
+    white-space: nowrap;
+    font-weight: bold;
+}
+.badge {
+    background: #e4f1f1;
+    border-radius: 20px;
+    padding: 5px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+.total-box {
+    background: #fff8df;
+    border: 1px solid #d8b54b;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-top: 18px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.total-box strong {
+    background: #f1cd60;
+    padding: 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 15px 0;
+}
+.toolbar input {
+    flex: 1;
+    min-width: 180px;
+}
+.toolbar select {
+    width: auto;
+}
+footer {
+    text-align: center;
+    padding: 16px;
+    background: #075762;
+    color: white;
+    border-radius: 10px;
+    font-size: 12px;
+}
+footer a {
+    color: white;
+}
+[hidden] {
+    display: none !important;
+}
+dialog {
+    border: 0;
+    border-radius: 15px;
+    max-width: 500px;
+    width: calc(100% - 30px);
+    padding: 25px;
+}
+dialog::backdrop {
+    background: #123c4b88;
+}
+@media (max-width: 600px) {
+    body {
+        padding: 16px 10px;
+    }
+    .card {
+        padding: 20px 15px;
+    }
+    .stats {
+        gap: 8px;
+    }
+    .stat {
+        padding: 13px;
+    }
+    .stat strong {
+        font-size: 17px;
+    }
+    .total-box {
+        font-size: 15px;
+        flex-wrap: wrap;
+    }
+    table {
+        min-width: 740px;
+    }
+    h1 {
+        font-size: 22px;
+    }
+}
+
+</style>
 </head>
 <body>
-
-<div class="form-container">
-    <div class="header">
-        <h2>Lions International</h2>
-        <h3>District 325 F</h3>
-        <h4 style="margin: 10px 0 0 0; color: #d9534f;">LCIF Contribution Commitment</h4>
-    </div>
-
-    <form id="commitmentForm">
-        <div class="form-group">
-            <label>Membership No.:</label>
-            <input type="text" id="membershipNo" required>
-        </div>
-        <div class="form-group">
-            <label>Name:</label>
-            <input type="text" id="name" required>
-        </div>
-        <div class="form-group">
-            <label>Club Name:</label>
-            <input type="text" id="clubName" required>
-        </div>
-        <div class="form-group">
-            <label>Contact Number:</label>
-            <input type="tel" id="contactNo" required>
-        </div>
-        <div class="form-group">
-            <label>Contribution Amount ($):</label>
-            <input type="number" id="amount" required>
-        </div>
-        <div class="form-group">
-            <label>Payment Method:</label>
-            <select id="paymentMethod" onchange="toggleQR(this.value)" required>
-                <option value="">Select Method</option>
-                <option value="Cash">Cash</option>
-                <option value="Cheque">Cheque</option>
-                <option value="QR Payment">QR Payment</option>
-            </select>
-        </div>
-
-        <div class="qr-section" id="qrSection">
-            <div class="qr-title">Scan & Pay</div>
-            <img src="qr-code.jpg" alt="LCIF Contribution QR">
-        </div>
-
-        <button type="button" id="submitBtn" class="btn-submit" onclick="submitData()">Submit & Send to WhatsApp</button>
-    </form>
-
-    <div class="footer">
-        Design by : <a href="https://www.facebook.com/nirajan.aryal.92" target="_blank">Nirajan Aryal</a> | 9851113811
-    </div>
+<div class="container">
+<div class="toolbar"><a id="adminLink" class="link-button" target="_top">Admin Login</a></div>
+<section class="card form-card"><div class="header">
+    <img class="logo" src="https://district325f.github.io/LCIF/logo.png" alt="Lions International Logo">
+    <h1>Lions International</h1>
+    <h3>District 325 F</h3>
+    <h3>LCIF Contribution Commitment</h3>
 </div>
-
+<form id="commitmentForm">
+    <label for="membershipNo">Membership No.:</label>
+    <input id="membershipNo" inputmode="numeric" autocomplete="off" required pattern="[0-9]+">
+    <div id="lookupMessage" class="message" role="status">Enter your Membership Number.</div>
+    <label for="name">Name:</label><input id="name" readonly>
+    <label for="clubName">Club Name:</label><input id="clubName" readonly>
+    <label for="contactNo">Contact Number:</label><input id="contactNo" readonly>
+    <label for="amount">Contribution Amount ($):</label><input id="amount" type="number" min="0.01" max="100000000" step="0.01" required>
+    <label for="paymentMethod">Payment Method:</label>
+    <select id="paymentMethod" required><option value="">Select Method</option><option>Cash</option><option>Cheque</option><option>QR Payment</option></select>
+    <div id="qrSection" class="qr" hidden><h3>Scan &amp; Pay</h3><img src="https://district325f.github.io/LCIF/qr-code.jpg" alt="LCIF Payment QR"></div>
+    <button id="submitBtn" class="full" type="submit" disabled>Submit &amp; Send to WhatsApp</button>
+</form>
+<div id="submitMessage" class="message" role="status"></div>
+<a id="whatsappLink" class="link-button" target="_blank" rel="noopener" hidden>Open WhatsApp</a>
+</section>
+<section class="card">
+    <div class="header"><h2>Contribution Details</h2><div class="muted">LCIF Contribution Records · LY 2026–2027</div></div>
+<div class="stats">
+    <div class="stat"><span>TOTAL RECORDS</span><strong id="recordCount">—</strong></div>
+    <div class="stat"><span>TOTAL CONTRIBUTION &amp; COMMITMENT</span><strong id="totalAmount">—</strong></div>
+    <div class="stat"><span>VERIFIED CONTRIBUTION</span><strong id="verifiedAmount">—</strong><span id="verifiedCount"></span></div>
+    <div class="stat"><span>PENDING COMMITMENT</span><strong id="pendingAmount">—</strong><span id="pendingCount"></span></div>
+</div><div class="table-wrap"><table>
+    <thead><tr><th>S.N.</th><th>Name</th><th>Club Name</th><th>Contact</th><th>Amount</th><th>Payment Type</th></tr></thead>
+    <tbody id="records"></tbody>
+    </table></div><div class="total-box"><span>LCIF Total Contribution</span><strong id="bottomTotal">—</strong></div>
+    <div id="dataMessage" class="message" role="status"></div>
+    <button id="retryBtn" class="small" type="button">Refresh / Retry</button>
+</section>
+<footer>Designed by: <a href="https://www.facebook.com/nirajan.aryal.92" target="_blank" rel="noopener">Nirajan Aryal</a> | Mobile: 9851113811</footer>
+</div>
 <script>
-    function toggleQR(value) {
-        const qrSection = document.getElementById('qrSection');
-        qrSection.style.display = (value === 'QR Payment') ? 'block' : 'none';
-    }
+/* ============================================================
+   API / FORMATTING / REPORT TABLE
+   ============================================================ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxWOkWegxUN2ZGQ7EdYMnD5UqOr4P9vYmryqRXldkx-2Zgop36JsAnguPVYWMHQH9GXZg/exec';
+const ASSET_URL = 'https://district325f.github.io/LCIF/';
+const money = value => '$' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const $ = id => document.getElementById(id);
+const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function api(name, ...args) {
+    return new Promise((resolve, reject) => {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args);
+    });
+}
+function message(id, text, error = false) {
+    $(id).textContent = text;
+    $(id).className = error ? 'message error' : 'message';
+}
+function hostPage(page) {
+    if (typeof google !== 'undefined' && google.script && google.script.run) return false;
+    document.body.innerHTML = '<div id="hostNote">Loading LCIF…</div><iframe title="LCIF Contribution Management" allow="clipboard-write" style="position:fixed;inset:0;width:100%;height:100%;border:0" src="' + WEB_APP_URL + (page === 'admin' ? '?page=admin' : '') + '"></iframe>';
+    return true;
+}
+function renderRecords(rows, target, admin = false) {
+    $(target).innerHTML = rows.map((r, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.clubName) + '</td><td>' + esc(r.contactNo || '—') + '</td><td class="amount">' + money(r.amount) + '</td><td><span class="badge">' + esc(r.paymentMethod || '—') + '</span></td>' + (admin ? '<td>' + esc(r.status) + '</td><td><button class="small edit-record" data-id="' + esc(r.id) + '">Edit</button></td>' : '') + '</tr>').join('');
+    if (!rows.length) $(target).innerHTML = '<tr><td colspan="8">No contribution records found.</td></tr>';
+}
+function showSummary(s) {
+    $('recordCount').textContent = s.records;
+    $('totalAmount').textContent = money(s.total);
+    $('bottomTotal').textContent = money(s.total);
+    $('verifiedAmount').textContent = money(s.verifiedAmount);
+    $('pendingAmount').textContent = money(s.pendingAmount);
+    $('verifiedCount').textContent = s.verified + ' records';
+    $('pendingCount').textContent = s.pending + ' records';
+}
 
-    function submitData() {
-        const submitBtn = document.getElementById('submitBtn');
-        
-        const memNo = document.getElementById('membershipNo').value;
-        const name = document.getElementById('name').value;
-        const club = document.getElementById('clubName').value;
-        const contact = document.getElementById('contactNo').value;
-        const amount = document.getElementById('amount').value;
-        const method = document.getElementById('paymentMethod').value;
-
-        if(!memNo || !name || !club || !contact || !amount || !method) {
-            alert('कृपया सबै विवरणहरू भर्नुहोस् ।');
-            return;
+/* ============================================================
+   REAL TEXT PDF — LOCAL WRITER, NO CDN OR SCREENSHOT TABLE
+   ============================================================ */
+async function logoJpeg() {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = () => reject(new Error('Logo could not load. Check logo.png.'));
+        image.src = ASSET_URL + 'logo.png';
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = 180;
+    canvas.height = Math.round(180 * image.height / image.width);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const raw = atob(canvas.toDataURL('image/jpeg', 0.95).split(',')[1]);
+    return {bytes: raw, width: canvas.width, height: canvas.height};
+}
+function pdfEscape(value) {
+    const text = String(value || '').replace(/[\r\n]+/g, ' ');
+    if (/[^\x20-\x7e]/.test(text)) throw new Error('Direct PDF currently supports English text. Use Print / Save PDF for Unicode names.');
+    return text.replace(/([\\()])/g, '\\$1');
+}
+function wrapPdf(text, width, size) {
+    const max = Math.max(3, Math.floor(width / (size * 0.56)));
+    const words = String(text || '').split(/\s+/);
+    const lines = [''];
+    words.forEach(word => {
+        while (word.length > max) {
+            if (lines[lines.length - 1]) lines.push('');
+            lines[lines.length - 1] = word.slice(0, max);
+            lines.push('');
+            word = word.slice(max);
         }
-
-        submitBtn.disabled = true;
-        submitBtn.innerText = "डाटा सेभ हुँदैछ...";
-
-        const formData = {
-            membershipNo: memNo,
-            name: name,
-            clubName: club,
-            contactNo: contact,
-            amount: amount,
-            paymentMethod: method
-        };
-
-        var webAppUrl = "https://script.google.com/macros/s/AKfycbxWOkWegxUN2ZGQ7EdYMnD5UqOr4P9vYmryqRXldkx-2Zgop36JsAnguPVYWMHQH9GXZg/exec";
-        
-        fetch(webAppUrl, {
-            method: 'POST',
-            body: JSON.stringify(formData),
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            }
-        })
-        .then(res => res.json())
-        .then(response => {
-            // डाटा गुगल शीटमा सफलतापूर्वक सुरक्षित भएपछि सिधै व्हाट्सएप खोल्ने
-            redirectToWhatsApp(formData);
-        })
-        .catch(err => {
-            // कुनै कारणले इन्टरनेट वा सिटमा समस्या आए पनि व्हाट्सएप खोल्ने
-            redirectToWhatsApp(formData);
+        const last = lines.length - 1;
+        if ((lines[last] + ' ' + word).trim().length > max) lines.push(word);
+        else lines[last] = (lines[last] + ' ' + word).trim();
+    });
+    return lines;
+}
+async function downloadPdf(rows) {
+    const logo = await logoJpeg();
+    const widths = [24, 110, 126, 65, 83, 57, 62];
+    const headers = ['S.N.', 'Name', 'Club Name', 'Membership', 'Contact', 'Amount', 'Payment Type'];
+    const pages = [];
+    let commands = '', y = 0;
+    const text = (x, top, content, size = 9, bold = false) => {
+        commands += `BT /${bold ? 'F2' : 'F1'} ${size} Tf 0.02 0.16 0.24 rg 1 0 0 1 ${x} ${842 - top} Tm (${pdfEscape(content)}) Tj ET\n`;
+    };
+    const line = (x1, top1, x2, top2) => {
+        commands += `0.75 0.8 0.83 RG 0.4 w ${x1} ${842-top1} m ${x2} ${842-top2} l S\n`;
+    };
+    function startPage() {
+        commands = '';
+        const logoHeight = 42 * logo.height / logo.width;
+        commands += `q 42 0 0 ${logoHeight} 276 ${842-24-logoHeight} cm /Logo Do Q\n`;
+        text(242, 89, 'Lions International', 13, true);
+        text(260, 107, 'District 325 F', 11, true);
+        text(170, 126, 'Lions Clubs International Foundation (LCIF)', 11);
+        text(237, 145, 'Contribution Report', 12, true);
+        line(34, 156, 561, 156);
+        text(34, 176, 'All Contribution Records', 9, true);
+        text(350, 176, 'Generated: ' + new Date().toLocaleString('en-GB', {timeZone:'Asia/Kathmandu', hour12:false}), 8);
+        y = 196;
+        drawRow(headers.map(h => wrapPdf(h, widths[headers.indexOf(h)] - 8, 8)), 30, true);
+    }
+    function drawRow(cells, height, bold = false) {
+        let x = 34;
+        if (bold) commands += `0.9 0.96 0.96 rg 34 ${842-y-height} 527 ${height} re f\n`;
+        cells.forEach((lines, i) => {
+            lines.forEach((v, j) => text(x+4, y+13+j*11, v, bold ? 8 : 9, bold));
+            line(x, y, x, y+height);
+            x += widths[i];
         });
+        line(x, y, x, y+height);
+        line(34, y, x, y);
+        line(34, y+height, x, y+height);
+        y += height;
     }
+    startPage();
+    rows.forEach((r, i) => {
+        const vals = [String(i+1), r.name, r.clubName, r.membershipNo || '', r.contactNo || '', money(r.amount), r.paymentMethod || ''];
+        const cells = vals.map((v,j) => wrapPdf(v, widths[j]-8, 9));
+        const height = Math.max(27, 12 + Math.max(...cells.map(c=>c.length))*11);
+        if (y + height > 746) { pages.push(commands); startPage(); }
+        drawRow(cells, height);
+    });
+    if (y + 65 > 746) { pages.push(commands); startPage(); }
+    const total = rows.reduce((s,r)=>s+Math.round(r.amount*100),0)/100;
+    text(40, y+24, 'Total Records: ' + rows.length, 10, true);
+    text(40, y+44, 'LCIF Total Contribution: ' + money(total), 11, true);
+    pages.push(commands);
+    const objects = [null];
+    const add = value => { objects.push(value); return objects.length-1; };
+    const catalog = add('');
+    const tree = add('');
+    const regular = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+    const bold = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+    const image = add(`<< /Type /XObject /Subtype /Image /Width ${logo.width} /Height ${logo.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${logo.bytes.length} >>\nstream\n${logo.bytes}\nendstream`);
+    const pageIds = [];
+    pages.forEach((p,i) => {
+        commands = p;
+        text(34, 797, 'Designed by: Nirajan Aryal | Mobile: 9851113811', 8);
+        text(492, 797, `Page ${i+1} of ${pages.length}`, 8);
+        const stream = add(`<< /Length ${commands.length} >>\nstream\n${commands}endstream`);
+        pageIds.push(add(`<< /Type /Page /Parent ${tree} 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${regular} 0 R /F2 ${bold} 0 R >> /XObject << /Logo ${image} 0 R >> >> /Contents ${stream} 0 R >>`));
+    });
+    objects[catalog] = `<< /Type /Catalog /Pages ${tree} 0 R >>`;
+    objects[tree] = `<< /Type /Pages /Kids [${pageIds.map(id=>id+' 0 R').join(' ')}] /Count ${pageIds.length} >>`;
+    let output = '%PDF-1.4\n';
+    const offsets = [0];
+    objects.slice(1).forEach((obj,i) => { offsets.push(output.length); output += `${i+1} 0 obj\n${obj}\nendobj\n`; });
+    const xref = output.length;
+    output += `xref\n0 ${objects.length}\n0000000000 65535 f \n` + offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('');
+    output += `trailer\n<< /Size ${objects.length} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    const blob = new Blob([Uint8Array.from(output,c=>c.charCodeAt(0))],{type:'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'LCIF_Contribution_Report_' + new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kathmandu'}) + '.pdf';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+function printReport(rows) {
+    const win = window.open('', '_blank');
+    if (!win) throw new Error('Allow pop-ups to print the report.');
+    const headers = ['S.N.', 'Name', 'Club Name', 'Membership', 'Contact', 'Amount', 'Payment Type'];
+    const body = rows.map((r,i)=>'<tr>'+[i+1,r.name,r.clubName,r.membershipNo||'',r.contactNo||'',money(r.amount),r.paymentMethod||''].map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');
+    win.document.write('<!DOCTYPE html><html><head><title>LCIF Contribution Report</title><style>@page{size:A4 portrait;margin:15mm}body{font:11px Arial;color:#063b48}header{text-align:center}img{width:60px}h2,h3,p{margin:6px}table{border-collapse:collapse;width:100%;table-layout:fixed}td,th{border:1px solid #cbd5e1;padding:7px;overflow-wrap:anywhere}th{background:#eef7f7}thead{display:table-header-group}tr{break-inside:avoid}footer{margin-top:18px;text-align:center;font-size:9px}.summary{padding:15px;border:1px solid #d8b85a;margin-top:15px}</style></head><body><header><img src="'+ASSET_URL+'logo.png"><h2>Lions International</h2><h3>District 325 F</h3><p>Lions Clubs International Foundation (LCIF)</p><h3>Contribution Report</h3></header><hr><p>All Contribution Records · Generated: '+esc(new Date().toLocaleString())+'</p><table><colgroup><col style="width:5%"><col style="width:21%"><col style="width:24%"><col style="width:12%"><col style="width:15%"><col style="width:11%"><col style="width:12%"></colgroup><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table><div class="summary">Total Records: '+rows.length+'<br><br><b>LCIF Total Contribution: '+money(rows.reduce((s,r)=>s+r.amount,0))+'</b></div><footer>Designed by: Nirajan Aryal | Mobile: 9851113811</footer></body></html>');
+    win.document.close();
+    win.onload = ()=>win.print();
+}
 
-    function redirectToWhatsApp(data) {
-        // तपाईँले भन्नुभए अनुसारको सटिक नेपाली टेक्स्ट संरचना
-        let message = `नमस्ते लायन प्रविन प्रसाद लाकोल ज्यू,\n\n` +
-                      `LCIF योगदान (2026-2027) को लागि मेरो सहयोग विवरण यस प्रकार छ:\n\n` +
-                      `• *Membership No.:* ${data.membershipNo}\n` +
-                      `• *Name:* ${data.name}\n` +
-                      `• *Club Name:* ${data.clubName}\n` +
-                      `• *Contact Number:* ${data.contactNo}\n` +
-                      `• *Contribution Amount:* $${data.amount}\n` +
-                      `• *Payment Method:* ${data.paymentMethod}\n\n` +
-                      `मैले बैंक भौचरको फोटो यसै साथ संलग्न गरेको छु ।`;
-
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/9779849260160?text=${encodedMessage}`;
-        
-        // पहिले ह्वाट्सएप विन्डो खोल्ने
-        window.open(whatsappUrl, '_blank');
-        
-        // विन्डो खुलिसकेपछि मात्र बटन र फारम रिसेट गर्ने (डाटा ओभरराइट वा ब्ल्याङ्क हुनबाट जोगाउन)
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Submit & Send to WhatsApp";
-        document.getElementById('commitmentForm').reset();
-        document.getElementById('qrSection').style.display = 'none';
+/* ============================================================
+   PUBLIC MEMBER LOOKUP / SUBMISSION / DATA LOAD
+   ============================================================ */
+let member = null;
+let lookupVersion = 0;
+let lookupTimer;
+let requestId = null;
+async function findMember() {
+    const version = ++lookupVersion;
+    const id = $('membershipNo').value.trim();
+    member = null;
+    ['name', 'clubName', 'contactNo'].forEach(key => $(key).value = '');
+    $('submitBtn').disabled = true;
+    if (!id) return message('lookupMessage', 'Enter your Membership Number.');
+    message('lookupMessage', 'Searching…');
+    try {
+        const result = await api('lookupMember', id);
+        if (version !== lookupVersion || $('membershipNo').value.trim() !== id) return;
+        member = result;
+        ['name', 'clubName', 'contactNo'].forEach(key => $(key).value = result[key]);
+        message('lookupMessage', result.contactNo ? 'Verified member' : 'Verified member — Mobile is blank in the master sheet.');
+        $('submitBtn').disabled = false;
+    } catch (error) {
+        if (version === lookupVersion) message('lookupMessage', error.message, true);
     }
+}
+async function loadPublic() {
+    message('dataMessage', 'Loading contribution records…');
+    $('retryBtn').disabled = true;
+    try {
+        const data = await api('getPublicData');
+        renderRecords(data.records, 'records');
+        showSummary(data.summary);
+        message('dataMessage', 'Total includes Verified contributions and Pending commitments shown separately above.');
+    } catch (error) {
+        message('dataMessage', error.message + ' Use Retry.', true);
+    } finally { $('retryBtn').disabled = false; }
+}
+function whatsappLink(data) {
+    const text = `नमस्ते लायन प्रविन प्रसाद लाकोल ज्यू,\n\nLCIF योगदान (2026-2027) को लागि मेरो सहयोग विवरण यस प्रकार छ:\n\n• *Membership No.:* ${data.membershipNo}\n• *Name:* ${data.name}\n• *Club Name:* ${data.clubName}\n• *Contact Number:* ${data.contactNo}\n• *Contribution Amount:* ${money(data.amount)}\n• *Payment Method:* ${data.paymentMethod}\n\nकृपया मेरो योगदान विवरण जाँच गरिदिनुहोस् । बैंक भौचर भए यसको फोटो यसै च्याटमा पठाउनेछु ।`;
+    return 'https://wa.me/9779849260160?text=' + encodeURIComponent(text);
+}
+async function submitData(event) {
+    event.preventDefault();
+    if (!member || member.membershipNo !== $('membershipNo').value.trim()) {
+        message('submitMessage', 'Verify your Membership Number first.', true);
+        return;
+    }
+    requestId = requestId || (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
+    const data = {...member, amount: $('amount').value, paymentMethod: $('paymentMethod').value, requestId};
+    const popup = window.open('about:blank', '_blank');
+    if (popup) popup.document.body.textContent = 'Saving LCIF contribution. Please wait…';
+    $('submitBtn').disabled = true;
+    $('membershipNo').disabled = true;
+    $('amount').disabled = true;
+    $('paymentMethod').disabled = true;
+    $('submitBtn').textContent = 'Saving…';
+    message('submitMessage', 'Saving contribution…');
+    try {
+        const result = await api('submitContribution', data);
+        const link = whatsappLink({...data, ...result.member});
+        $('whatsappLink').href = link;
+        $('whatsappLink').hidden = false;
+        if (popup) popup.location.href = link;
+        message('submitMessage', 'Saved as Pending. Reference: ' + result.reference + '. If WhatsApp did not open, use the button below.');
+        requestId = null;
+        $('commitmentForm').reset();
+        $('qrSection').hidden = true;
+        member = null;
+        message('lookupMessage', 'Enter your Membership Number.');
+        await loadPublic();
+    } catch (error) {
+        if (popup) popup.close();
+        message('submitMessage', error.message + ' Retry with the same details.', true);
+    } finally {
+        $('membershipNo').disabled = false;
+        $('amount').disabled = false;
+        $('paymentMethod').disabled = false;
+        $('submitBtn').disabled = !member;
+        $('submitBtn').textContent = 'Submit & Send to WhatsApp';
+    }
+}
+if (!hostPage('public')) {
+    $('membershipNo').addEventListener('input', () => {
+        lookupVersion++;
+        member = null;
+        requestId = null;
+        $('submitBtn').disabled = true;
+        ['name', 'clubName', 'contactNo'].forEach(key => $(key).value = '');
+        clearTimeout(lookupTimer);
+        lookupTimer = setTimeout(findMember, 450);
+    });
+    $('paymentMethod').addEventListener('change', () => {
+        requestId = null;
+        $('qrSection').hidden = $('paymentMethod').value !== 'QR Payment';
+    });
+    $('amount').addEventListener('input', () => { requestId = null; });
+    $('commitmentForm').addEventListener('submit', submitData);
+    $('retryBtn').addEventListener('click', loadPublic);
+    $('adminLink').href = WEB_APP_URL + '?page=admin';
+    loadPublic();
+}
+
 </script>
-
 </body>
 </html>
