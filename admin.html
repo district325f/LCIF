@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LCIF Contribution Management</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: #eef4f5;
+    color: #123c4b;
+    margin: 0;
+    padding: 28px 16px;
+}
+.container {
+    max-width: 1080px;
+    margin: auto;
+}
+.card {
+    background: white;
+    border-radius: 18px;
+    border-top: 4px solid #ceaf45;
+    box-shadow: 0 8px 30px #123c4b0c;
+    padding: 28px;
+    margin-bottom: 22px;
+}
+.form-card {
+    max-width: 560px;
+    margin: 0 auto 26px;
+}
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.logo {
+    width: 78px;
+    height: 78px;
+    object-fit: contain;
+}
+h1 {
+    font-size: 25px;
+    margin: 12px 0 6px;
+}
+h2 {
+    font-size: 23px;
+    margin: 5px 0 8px;
+}
+h3 {
+    font-size: 17px;
+    margin: 8px 0;
+}
+.muted {
+    color: #718692;
+    font-size: 13px;
+}
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 16px 0 7px;
+}
+input, select {
+    width: 100%;
+    border: 1px solid #cbd9df;
+    border-radius: 7px;
+    padding: 12px;
+    font-size: 15px;
+    color: #123c4b;
+    background: white;
+}
+input[readonly] {
+    background: #f4f8fa;
+}
+input:focus, select:focus {
+    outline: 2px solid #128080;
+    outline-offset: 1px;
+}
+button, .link-button {
+    border: 0;
+    border-radius: 8px;
+    background: #086b70;
+    color: white;
+    padding: 12px 17px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+}
+button:hover {
+    background: #07545b;
+}
+button:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+.full {
+    width: 100%;
+    margin-top: 20px;
+}
+.small {
+    padding: 7px 12px;
+    font-size: 12px;
+}
+.gold {
+    background: #c49726;
+}
+.message {
+    min-height: 20px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: #087164;
+}
+.error {
+    color: #b02b39;
+}
+.qr {
+    text-align: center;
+    padding: 18px;
+    border: 1px dashed #086b70;
+    margin-top: 20px;
+}
+.qr img {
+    max-width: 220px;
+    width: 100%;
+}
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+}
+.stat {
+    background: #f3f8fa;
+    border: 1px solid #d9e7eb;
+    border-radius: 12px;
+    padding: 16px;
+}
+.stat span {
+    display: block;
+    font-size: 11px;
+    color: #718692;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.stat strong {
+    font-size: 20px;
+}
+.table-wrap {
+    overflow: auto;
+    border: 1px solid #dbe7eb;
+    border-radius: 10px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+th {
+    background: #075762;
+    color: white;
+    text-align: left;
+    padding: 15px 12px;
+    white-space: nowrap;
+}
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e0e9ec;
+    overflow-wrap: anywhere;
+}
+tbody tr:nth-child(even) {
+    background: #f5f9fa;
+}
+.amount {
+    white-space: nowrap;
+    font-weight: bold;
+}
+.badge {
+    background: #e4f1f1;
+    border-radius: 20px;
+    padding: 5px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+.total-box {
+    background: #fff8df;
+    border: 1px solid #d8b54b;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-top: 18px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.total-box strong {
+    background: #f1cd60;
+    padding: 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 15px 0;
+}
+.toolbar input {
+    flex: 1;
+    min-width: 180px;
+}
+.toolbar select {
+    width: auto;
+}
+footer {
+    text-align: center;
+    padding: 16px;
+    background: #075762;
+    color: white;
+    border-radius: 10px;
+    font-size: 12px;
+}
+footer a {
+    color: white;
+}
+[hidden] {
+    display: none !important;
+}
+dialog {
+    border: 0;
+    border-radius: 15px;
+    max-width: 500px;
+    width: calc(100% - 30px);
+    padding: 25px;
+}
+dialog::backdrop {
+    background: #123c4b88;
+}
+@media (max-width: 600px) {
+    body {
+        padding: 16px 10px;
+    }
+    .card {
+        padding: 20px 15px;
+    }
+    .stats {
+        gap: 8px;
+    }
+    .stat {
+        padding: 13px;
+    }
+    .stat strong {
+        font-size: 17px;
+    }
+    .total-box {
+        font-size: 15px;
+        flex-wrap: wrap;
+    }
+    table {
+        min-width: 740px;
+    }
+    h1 {
+        font-size: 22px;
+    }
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+<div class="toolbar"><a id="publicLink" class="link-button" target="_top">Public Form</a></div>
+<section id="loginCard" class="card form-card"><div class="header">
+    <img class="logo" src="https://district325f.github.io/LCIF/logo.png" alt="Lions International Logo">
+    <h1>Lions International</h1>
+    <h3>District 325 F</h3>
+    <h3>LCIF Contribution Commitment</h3>
+</div>
+<h2>Admin Login</h2>
+<form id="loginForm">
+    <label for="username">Username</label><input id="username" required autocomplete="username">
+    <label for="password">Password</label><input id="password" type="password" required autocomplete="current-password">
+    <button id="loginBtn" class="full" type="submit">Sign In</button>
+</form><div id="loginMessage" class="message" role="status"></div>
+</section>
+<section id="dashboard" class="card" hidden><div class="header">
+    <img class="logo" src="https://district325f.github.io/LCIF/logo.png" alt="Lions International Logo">
+    <h1>Lions International</h1>
+    <h3>District 325 F</h3>
+    <h3>LCIF Contribution Commitment</h3>
+</div>
+<div class="toolbar"><strong id="signedIn"></strong><button id="refreshBtn">Refresh</button><button id="logoutBtn">Logout</button></div>
+<h2>Contribution Dashboard</h2><div class="stats">
+    <div class="stat"><span>TOTAL RECORDS</span><strong id="recordCount">—</strong></div>
+    <div class="stat"><span>TOTAL CONTRIBUTION &amp; COMMITMENT</span><strong id="totalAmount">—</strong></div>
+    <div class="stat"><span>VERIFIED CONTRIBUTION</span><strong id="verifiedAmount">—</strong><span id="verifiedCount"></span></div>
+    <div class="stat"><span>PENDING COMMITMENT</span><strong id="pendingAmount">—</strong><span id="pendingCount"></span></div>
+</div>
+<div class="toolbar">
+    <input id="search" aria-label="Search records" placeholder="Search name, club, membership, contact or reference">
+    <select id="statusFilter" aria-label="Filter status"><option value="">All Statuses</option><option>Pending</option><option>Verified</option></select>
+    <button id="printBtn">Print / Save PDF</button><button id="pdfBtn" class="gold">Download PDF</button>
+</div><p id="filteredCount" class="muted"></p><div class="table-wrap"><table>
+    <thead><tr><th>S.N.</th><th>Name</th><th>Club Name</th><th>Contact</th><th>Amount</th><th>Payment Type</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody id="records"></tbody>
+    </table></div><div class="total-box"><span>LCIF Total Contribution</span><strong id="bottomTotal">—</strong></div>
+<div id="adminMessage" class="message" role="status"></div>
+<div id="ownerTools" class="toolbar" hidden><button id="usersBtn">User Management</button><button id="auditBtn">Audit Log</button></div>
+</section>
+<section id="usersCard" class="card" hidden>
+<h2>User Management</h2>
+<div class="table-wrap"><table><thead><tr><th>Username</th><th>Status</th><th>Role</th></tr></thead><tbody id="userRows"></tbody></table></div>
+<form id="userForm">
+    <label for="newUsername">Username (new or existing)</label><input id="newUsername" required autocomplete="off">
+    <label for="newPassword">New Password (10+ characters; blank keeps existing)</label><input id="newPassword" type="password" autocomplete="new-password">
+    <label for="userStatus">Status</label><select id="userStatus"><option>Active</option><option>Inactive</option></select>
+    <button id="saveUserBtn" class="full">Save User</button>
+</form><div id="userMessage" class="message" role="status"></div>
+</section>
+<section id="auditCard" class="card" hidden><h2>Audit Log</h2>
+<div class="table-wrap"><table><thead><tr><th>Date/Time</th><th>Username</th><th>Action</th><th>Record</th><th>Old Value</th><th>New Value</th></tr></thead><tbody id="auditRows"></tbody></table></div>
+<div id="auditMessage" class="message" role="status"></div></section>
+<dialog id="editDialog"><h2>Edit Contribution</h2><p id="editName"></p>
+<form id="editForm">
+    <label for="editAmount">Amount ($)</label><input id="editAmount" type="number" min="0.01" max="100000000" step="0.01" required>
+    <label for="editContact">Contact</label><input id="editContact">
+    <label for="editMethod">Payment Method</label><select id="editMethod"><option value="">Not recorded</option><option>Cash</option><option>Cheque</option><option>QR Payment</option></select>
+    <label for="editStatus">Payment Status</label><select id="editStatus"><option>Pending</option><option>Verified</option></select>
+    <div class="toolbar"><button id="saveEditBtn">Save Changes</button><button id="cancelEdit" type="button">Cancel</button></div>
+</form><div id="editMessage" class="message" role="status"></div></dialog>
+<footer>Designed by: <a href="https://www.facebook.com/nirajan.aryal.92" target="_blank" rel="noopener">Nirajan Aryal</a> | Mobile: 9851113811</footer>
+</div>
+<script>
+/* ============================================================
+   API / FORMATTING / REPORT TABLE
+   ============================================================ */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxWOkWegxUN2ZGQ7EdYMnD5UqOr4P9vYmryqRXldkx-2Zgop36JsAnguPVYWMHQH9GXZg/exec';
+const ASSET_URL = 'https://district325f.github.io/LCIF/';
+const money = value => '$' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const $ = id => document.getElementById(id);
+const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function api(name, ...args) {
+    return new Promise((resolve, reject) => {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args);
+    });
+}
+function message(id, text, error = false) {
+    $(id).textContent = text;
+    $(id).className = error ? 'message error' : 'message';
+}
+function hostPage(page) {
+    if (typeof google !== 'undefined' && google.script && google.script.run) return false;
+    document.body.innerHTML = '<div id="hostNote">Loading LCIF…</div><iframe title="LCIF Contribution Management" allow="clipboard-write" style="position:fixed;inset:0;width:100%;height:100%;border:0" src="' + WEB_APP_URL + (page === 'admin' ? '?page=admin' : '') + '"></iframe>';
+    return true;
+}
+function renderRecords(rows, target, admin = false) {
+    $(target).innerHTML = rows.map((r, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.clubName) + '</td><td>' + esc(r.contactNo || '—') + '</td><td class="amount">' + money(r.amount) + '</td><td><span class="badge">' + esc(r.paymentMethod || '—') + '</span></td>' + (admin ? '<td>' + esc(r.status) + '</td><td><button class="small edit-record" data-id="' + esc(r.id) + '">Edit</button></td>' : '') + '</tr>').join('');
+    if (!rows.length) $(target).innerHTML = '<tr><td colspan="8">No contribution records found.</td></tr>';
+}
+function showSummary(s) {
+    $('recordCount').textContent = s.records;
+    $('totalAmount').textContent = money(s.total);
+    $('bottomTotal').textContent = money(s.total);
+    $('verifiedAmount').textContent = money(s.verifiedAmount);
+    $('pendingAmount').textContent = money(s.pendingAmount);
+    $('verifiedCount').textContent = s.verified + ' records';
+    $('pendingCount').textContent = s.pending + ' records';
+}
+
+/* ============================================================
+   REAL TEXT PDF — LOCAL WRITER, NO CDN OR SCREENSHOT TABLE
+   ============================================================ */
+async function logoJpeg() {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = () => reject(new Error('Logo could not load. Check logo.png.'));
+        image.src = ASSET_URL + 'logo.png';
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = 180;
+    canvas.height = Math.round(180 * image.height / image.width);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const raw = atob(canvas.toDataURL('image/jpeg', 0.95).split(',')[1]);
+    return {bytes: raw, width: canvas.width, height: canvas.height};
+}
+function pdfEscape(value) {
+    const text = String(value || '').replace(/[\r\n]+/g, ' ');
+    if (/[^\x20-\x7e]/.test(text)) throw new Error('Direct PDF currently supports English text. Use Print / Save PDF for Unicode names.');
+    return text.replace(/([\\()])/g, '\\$1');
+}
+function wrapPdf(text, width, size) {
+    const max = Math.max(3, Math.floor(width / (size * 0.56)));
+    const words = String(text || '').split(/\s+/);
+    const lines = [''];
+    words.forEach(word => {
+        while (word.length > max) {
+            if (lines[lines.length - 1]) lines.push('');
+            lines[lines.length - 1] = word.slice(0, max);
+            lines.push('');
+            word = word.slice(max);
+        }
+        const last = lines.length - 1;
+        if ((lines[last] + ' ' + word).trim().length > max) lines.push(word);
+        else lines[last] = (lines[last] + ' ' + word).trim();
+    });
+    return lines;
+}
+async function downloadPdf(rows) {
+    const logo = await logoJpeg();
+    const widths = [24, 110, 126, 65, 83, 57, 62];
+    const headers = ['S.N.', 'Name', 'Club Name', 'Membership', 'Contact', 'Amount', 'Payment Type'];
+    const pages = [];
+    let commands = '', y = 0;
+    const text = (x, top, content, size = 9, bold = false) => {
+        commands += `BT /${bold ? 'F2' : 'F1'} ${size} Tf 0.02 0.16 0.24 rg 1 0 0 1 ${x} ${842 - top} Tm (${pdfEscape(content)}) Tj ET\n`;
+    };
+    const line = (x1, top1, x2, top2) => {
+        commands += `0.75 0.8 0.83 RG 0.4 w ${x1} ${842-top1} m ${x2} ${842-top2} l S\n`;
+    };
+    function startPage() {
+        commands = '';
+        const logoHeight = 42 * logo.height / logo.width;
+        commands += `q 42 0 0 ${logoHeight} 276 ${842-24-logoHeight} cm /Logo Do Q\n`;
+        text(242, 89, 'Lions International', 13, true);
+        text(260, 107, 'District 325 F', 11, true);
+        text(170, 126, 'Lions Clubs International Foundation (LCIF)', 11);
+        text(237, 145, 'Contribution Report', 12, true);
+        line(34, 156, 561, 156);
+        text(34, 176, 'All Contribution Records', 9, true);
+        text(350, 176, 'Generated: ' + new Date().toLocaleString('en-GB', {timeZone:'Asia/Kathmandu', hour12:false}), 8);
+        y = 196;
+        drawRow(headers.map(h => wrapPdf(h, widths[headers.indexOf(h)] - 8, 8)), 30, true);
+    }
+    function drawRow(cells, height, bold = false) {
+        let x = 34;
+        if (bold) commands += `0.9 0.96 0.96 rg 34 ${842-y-height} 527 ${height} re f\n`;
+        cells.forEach((lines, i) => {
+            lines.forEach((v, j) => text(x+4, y+13+j*11, v, bold ? 8 : 9, bold));
+            line(x, y, x, y+height);
+            x += widths[i];
+        });
+        line(x, y, x, y+height);
+        line(34, y, x, y);
+        line(34, y+height, x, y+height);
+        y += height;
+    }
+    startPage();
+    rows.forEach((r, i) => {
+        const vals = [String(i+1), r.name, r.clubName, r.membershipNo || '', r.contactNo || '', money(r.amount), r.paymentMethod || ''];
+        const cells = vals.map((v,j) => wrapPdf(v, widths[j]-8, 9));
+        const height = Math.max(27, 12 + Math.max(...cells.map(c=>c.length))*11);
+        if (y + height > 746) { pages.push(commands); startPage(); }
+        drawRow(cells, height);
+    });
+    if (y + 65 > 746) { pages.push(commands); startPage(); }
+    const total = rows.reduce((s,r)=>s+Math.round(r.amount*100),0)/100;
+    text(40, y+24, 'Total Records: ' + rows.length, 10, true);
+    text(40, y+44, 'LCIF Total Contribution: ' + money(total), 11, true);
+    pages.push(commands);
+    const objects = [null];
+    const add = value => { objects.push(value); return objects.length-1; };
+    const catalog = add('');
+    const tree = add('');
+    const regular = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+    const bold = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+    const image = add(`<< /Type /XObject /Subtype /Image /Width ${logo.width} /Height ${logo.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${logo.bytes.length} >>\nstream\n${logo.bytes}\nendstream`);
+    const pageIds = [];
+    pages.forEach((p,i) => {
+        commands = p;
+        text(34, 797, 'Designed by: Nirajan Aryal | Mobile: 9851113811', 8);
+        text(492, 797, `Page ${i+1} of ${pages.length}`, 8);
+        const stream = add(`<< /Length ${commands.length} >>\nstream\n${commands}endstream`);
+        pageIds.push(add(`<< /Type /Page /Parent ${tree} 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 ${regular} 0 R /F2 ${bold} 0 R >> /XObject << /Logo ${image} 0 R >> >> /Contents ${stream} 0 R >>`));
+    });
+    objects[catalog] = `<< /Type /Catalog /Pages ${tree} 0 R >>`;
+    objects[tree] = `<< /Type /Pages /Kids [${pageIds.map(id=>id+' 0 R').join(' ')}] /Count ${pageIds.length} >>`;
+    let output = '%PDF-1.4\n';
+    const offsets = [0];
+    objects.slice(1).forEach((obj,i) => { offsets.push(output.length); output += `${i+1} 0 obj\n${obj}\nendobj\n`; });
+    const xref = output.length;
+    output += `xref\n0 ${objects.length}\n0000000000 65535 f \n` + offsets.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('');
+    output += `trailer\n<< /Size ${objects.length} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    const blob = new Blob([Uint8Array.from(output,c=>c.charCodeAt(0))],{type:'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'LCIF_Contribution_Report_' + new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Kathmandu'}) + '.pdf';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+function printReport(rows) {
+    const win = window.open('', '_blank');
+    if (!win) throw new Error('Allow pop-ups to print the report.');
+    const headers = ['S.N.', 'Name', 'Club Name', 'Membership', 'Contact', 'Amount', 'Payment Type'];
+    const body = rows.map((r,i)=>'<tr>'+[i+1,r.name,r.clubName,r.membershipNo||'',r.contactNo||'',money(r.amount),r.paymentMethod||''].map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');
+    win.document.write('<!DOCTYPE html><html><head><title>LCIF Contribution Report</title><style>@page{size:A4 portrait;margin:15mm}body{font:11px Arial;color:#063b48}header{text-align:center}img{width:60px}h2,h3,p{margin:6px}table{border-collapse:collapse;width:100%;table-layout:fixed}td,th{border:1px solid #cbd5e1;padding:7px;overflow-wrap:anywhere}th{background:#eef7f7}thead{display:table-header-group}tr{break-inside:avoid}footer{margin-top:18px;text-align:center;font-size:9px}.summary{padding:15px;border:1px solid #d8b85a;margin-top:15px}</style></head><body><header><img src="'+ASSET_URL+'logo.png"><h2>Lions International</h2><h3>District 325 F</h3><p>Lions Clubs International Foundation (LCIF)</p><h3>Contribution Report</h3></header><hr><p>All Contribution Records · Generated: '+esc(new Date().toLocaleString())+'</p><table><colgroup><col style="width:5%"><col style="width:21%"><col style="width:24%"><col style="width:12%"><col style="width:15%"><col style="width:11%"><col style="width:12%"></colgroup><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table><div class="summary">Total Records: '+rows.length+'<br><br><b>LCIF Total Contribution: '+money(rows.reduce((s,r)=>s+r.amount,0))+'</b></div><footer>Designed by: Nirajan Aryal | Mobile: 9851113811</footer></body></html>');
+    win.document.close();
+    win.onload = ()=>win.print();
+}
+
+/* ============================================================
+   ADMIN LOGIN / DASHBOARD / EDIT / USERS / AUDIT
+   ============================================================ */
+let session = null;
+let allRecords = [];
+let filteredRecords = [];
+let editingId = null;
+function showLogin() {
+    session = null;
+    sessionStorage.removeItem('lcif_session');
+    $('dashboard').hidden = true;
+    $('loginCard').hidden = false;
+    $('usersCard').hidden = true;
+    $('auditCard').hidden = true;
+    allRecords = [];
+}
+async function signIn(event) {
+    event.preventDefault();
+    $('loginBtn').disabled = true;
+    message('loginMessage', 'Signing in…');
+    try {
+        session = await api('loginAdmin', $('username').value, $('password').value);
+        sessionStorage.setItem('lcif_session', JSON.stringify(session));
+        $('password').value = '';
+        await loadAdmin();
+    } catch (error) { message('loginMessage', error.message, true); }
+    finally { $('loginBtn').disabled = false; }
+}
+async function loadAdmin() {
+    message('adminMessage', 'Loading dashboard…');
+    try {
+        const data = await api('getAdminData', session.token);
+        allRecords = data.records;
+        session.role = data.role;
+        $('loginCard').hidden = true;
+        $('dashboard').hidden = false;
+        $('ownerTools').hidden = data.role !== 'Owner';
+        $('signedIn').textContent = data.username + ' · ' + data.role;
+        showSummary(data.summary);
+        filterRecords();
+        message('adminMessage', 'Dashboard loaded. Total includes Pending commitments; Verified and Pending amounts are separate.');
+    } catch (error) {
+        if (/Session expired/.test(error.message)) showLogin();
+        message('loginMessage', error.message, true);
+        message('adminMessage', error.message, true);
+    }
+}
+function filterRecords() {
+    const query = $('search').value.toLowerCase().trim();
+    const status = $('statusFilter').value;
+    filteredRecords = allRecords.filter(r => (!status || r.status === status) && [r.name,r.clubName,r.membershipNo,r.contactNo,r.reference].join(' ').toLowerCase().includes(query));
+    renderRecords(filteredRecords, 'records', true);
+    $('filteredCount').textContent = filteredRecords.length + ' displayed records';
+}
+function openEdit(id) {
+    const record = allRecords.find(r => r.id === id);
+    if (!record) return;
+    editingId = id;
+    $('editName').textContent = record.name + ' · ' + record.clubName;
+    $('editAmount').value = record.amount;
+    $('editContact').value = record.contactNo;
+    $('editMethod').value = record.paymentMethod;
+    $('editStatus').value = record.status;
+    message('editMessage', '');
+    $('editDialog').showModal();
+}
+async function saveEdit(event) {
+    event.preventDefault();
+    $('saveEditBtn').disabled = true;
+    message('editMessage', 'Saving…');
+    try {
+        await api('updateContribution', session.token, editingId, {amount:$('editAmount').value,contactNo:$('editContact').value,paymentMethod:$('editMethod').value,status:$('editStatus').value});
+        $('editDialog').close();
+        await loadAdmin();
+    } catch (error) { message('editMessage', error.message, true); }
+    finally { $('saveEditBtn').disabled = false; }
+}
+async function loadUsers() {
+    $('usersCard').hidden = false;
+    message('userMessage', 'Loading users…');
+    try {
+        const users = await api('getUsers', session.token);
+        $('userRows').innerHTML = users.map(u=>'<tr><td>'+esc(u.username)+'</td><td>'+esc(u.status)+'</td><td>'+esc(u.role)+'</td></tr>').join('');
+        message('userMessage', 'Enter an existing username to change status/password. Blank password keeps the current password.');
+    } catch (error) { message('userMessage', error.message, true); }
+}
+async function saveUser(event) {
+    event.preventDefault();
+    $('saveUserBtn').disabled = true;
+    try {
+        await api('saveUser', session.token, {username:$('newUsername').value,password:$('newPassword').value,status:$('userStatus').value});
+        $('newPassword').value = '';
+        await loadUsers();
+        message('userMessage', 'User saved.');
+    } catch (error) { message('userMessage', error.message, true); }
+    finally { $('saveUserBtn').disabled = false; }
+}
+async function loadAudit() {
+    $('auditCard').hidden = false;
+    message('auditMessage', 'Loading last 200 audit entries…');
+    try {
+        const rows = await api('getAudit', session.token);
+        $('auditRows').innerHTML = rows.map(r=>'<tr>'+r.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');
+        message('auditMessage', 'Latest 200 actions. Full log remains in LCIF Audit Log sheet.');
+    } catch (error) { message('auditMessage', error.message, true); }
+}
+async function exportPdf() {
+    $('pdfBtn').disabled = true;
+    message('adminMessage', 'Preparing PDF…');
+    try {
+        await downloadPdf(filteredRecords);
+        message('adminMessage', 'PDF download started.');
+    } catch (error) { message('adminMessage', error.message, true); }
+    finally { $('pdfBtn').disabled = false; }
+}
+if (!hostPage('admin')) {
+    $('loginForm').addEventListener('submit', signIn);
+    $('refreshBtn').addEventListener('click', loadAdmin);
+    $('search').addEventListener('input', filterRecords);
+    $('statusFilter').addEventListener('change', filterRecords);
+    $('records').addEventListener('click', event => {
+        const button = event.target.closest('.edit-record');
+        if (button) openEdit(button.dataset.id);
+    });
+    $('editForm').addEventListener('submit', saveEdit);
+    $('cancelEdit').addEventListener('click', ()=>$('editDialog').close());
+    $('usersBtn').addEventListener('click', loadUsers);
+    $('auditBtn').addEventListener('click', loadAudit);
+    $('userForm').addEventListener('submit', saveUser);
+    $('pdfBtn').addEventListener('click', exportPdf);
+    $('printBtn').addEventListener('click', () => {
+        try { printReport(filteredRecords); } catch(error) { message('adminMessage',error.message,true); }
+    });
+    $('logoutBtn').addEventListener('click', async () => {
+        $('logoutBtn').disabled = true;
+        try { await api('logoutAdmin', session.token); }
+        catch (error) { message('loginMessage', error.message, true); }
+        finally { showLogin(); $('logoutBtn').disabled = false; }
+    });
+    $('publicLink').href = WEB_APP_URL;
+    try { session = JSON.parse(sessionStorage.getItem('lcif_session')); } catch (error) { session = null; }
+    if (session) loadAdmin();
+}
+
+</script>
+</body>
+</html>
