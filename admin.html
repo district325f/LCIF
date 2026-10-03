@@ -344,19 +344,44 @@ const ASSET_URL = 'https://district325f.github.io/LCIF/';
 const money = value => '$' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-function api(name, ...args) {
-    return new Promise((resolve, reject) => {
-        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args);
-    });
+async function api(name, ...args) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000);
+    try {
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'omit',
+            redirect: 'follow',
+            headers: {'Content-Type': 'text/plain;charset=utf-8'},
+            body: JSON.stringify({action: name, args: args}),
+            signal: controller.signal
+        });
+        if (!response.ok) throw new Error('Server returned HTTP ' + response.status + '.');
+        const raw = await response.text();
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch (error) {
+            throw new Error('Server did not return JSON. Deploy the updated Code.gs as Anyone / Execute as Me.');
+        }
+        if (data.status !== 'success') throw new Error(data.message || 'Request failed.');
+        return data.result;
+    } catch (error) {
+        if (error.name === 'AbortError') throw new Error('Request timed out. Please retry.');
+        if (error instanceof TypeError) throw new Error('Cannot reach LCIF API. Check internet, Web App URL and deployment access, then retry.');
+        throw error;
+    } finally {
+        clearTimeout(timeout);
+    }
 }
 function message(id, text, error = false) {
     $(id).textContent = text;
     $(id).className = error ? 'message error' : 'message';
 }
 function hostPage(page) {
-    if (typeof google !== 'undefined' && google.script && google.script.run) return false;
-    document.body.innerHTML = '<div id="hostNote">Loading LCIF…</div><iframe title="LCIF Contribution Management" allow="clipboard-write" style="position:fixed;inset:0;width:100%;height:100%;border:0" src="' + WEB_APP_URL + (page === 'admin' ? '?page=admin' : '') + '"></iframe>';
-    return true;
+    // The entire UI runs on GitHub Pages; no Apps Script HTML is required.
+    return false;
 }
 function renderRecords(rows, target, admin = false) {
     $(target).innerHTML = rows.map((r, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.clubName) + '</td><td>' + esc(r.contactNo || '—') + '</td><td class="amount">' + money(r.amount) + '</td><td><span class="badge">' + esc(r.paymentMethod || '—') + '</span></td>' + (admin ? '<td>' + esc(r.status) + '</td><td><button class="small edit-record" data-id="' + esc(r.id) + '">Edit</button></td>' : '') + '</tr>').join('');
@@ -647,7 +672,7 @@ if (!hostPage('admin')) {
         catch (error) { message('loginMessage', error.message, true); }
         finally { showLogin(); $('logoutBtn').disabled = false; }
     });
-    $('publicLink').href = WEB_APP_URL;
+    $('publicLink').href = 'index.html';
     try { session = JSON.parse(sessionStorage.getItem('lcif_session')); } catch (error) { session = null; }
     if (session) loadAdmin();
 }
